@@ -1,7 +1,13 @@
 // Parser for chord sequence input
 // Handles parsing of user input like "A4: 1,3,5, duration=2"
 
-export const Parser = {
+export interface ParsedChord {
+  fundamental: string;
+  intervals: string[];
+  duration: number;
+}
+
+export class Parser {
   /**
    * Parse a single chord line
    * Format: "fundamental: intervals, duration=multiplier"
@@ -9,13 +15,13 @@ export const Parser = {
    *   "A4: 1,3,5, duration=2"
    *   "440: 1,b3,5, duration=1.5"
    *   "C#3: 1,3,5,7,9, duration=1"
-   * 
-   * @param {string} line - Single line of chord input
-   * @returns {Object} - Parsed chord object
+   *
+   * @param line - Single line of chord input
+   * @returns Parsed chord object
    */
-  parseChordLine(line) {
+  static parseChordLine(line: string): ParsedChord | null {
     line = line.trim();
-    
+
     if (!line || line.startsWith('#') || line.startsWith('//')) {
       // Empty line or comment
       return null;
@@ -32,8 +38,8 @@ export const Parser = {
 
     // Split remainder by comma to get intervals and duration
     const parts = remainder.split(',').map(p => p.trim());
-    
-    const intervals = [];
+
+    const intervals: string[] = [];
     let duration = 1; // Default duration multiplier
 
     for (const part of parts) {
@@ -62,17 +68,17 @@ export const Parser = {
       intervals,
       duration
     };
-  },
+  }
 
   /**
    * Parse entire chord sequence input
-   * @param {string} input - Multi-line chord sequence
-   * @returns {Array} - Array of parsed chord objects
+   * @param input - Multi-line chord sequence
+   * @returns Array of parsed chord objects
    */
-  parseChordSequence(input) {
+  static parseChordSequence(input: string): ParsedChord[] {
     const lines = input.split('\n');
-    const chords = [];
-    
+    const chords: ParsedChord[] = [];
+
     for (let i = 0; i < lines.length; i++) {
       try {
         const chord = this.parseChordLine(lines[i]);
@@ -80,7 +86,7 @@ export const Parser = {
           chords.push(chord);
         }
       } catch (error) {
-        throw new Error(`Line ${i + 1}: ${error.message}`);
+        throw new Error(`Line ${i + 1}: ${(error as Error).message}`);
       }
     }
 
@@ -89,19 +95,19 @@ export const Parser = {
     }
 
     return chords;
-  },
+  }
 
   /**
    * Validate parsed chord data
-   * @param {Object} chord - Parsed chord object
-   * @returns {boolean} - True if valid
-   * @throws {Error} - If invalid
+   * @param chord - Parsed chord object
+   * @returns True if valid
+   * @throws Error if invalid
    */
-  validateChord(chord) {
+  static validateChord(chord: ParsedChord): boolean {
     if (!chord.fundamental) {
       throw new Error('Missing fundamental');
     }
-    
+
     if (!Array.isArray(chord.intervals) || chord.intervals.length === 0) {
       throw new Error('No intervals specified');
     }
@@ -111,13 +117,13 @@ export const Parser = {
     }
 
     return true;
-  },
+  }
 
   /**
    * Generate example chord sequence
-   * @returns {string} - Example input
+   * @returns Example input
    */
-  getExampleSequence() {
+  static getExampleSequence(): string {
     return `# Major chord progression in C
 C4: 1,3,5, duration=2
 F4: 1,3,5, duration=2
@@ -134,4 +140,4 @@ A3: 1,b3,5, duration=3
 # Using Hz input and compound intervals
 440: 1,3,5,7,9,11, duration=4`;
   }
-};
+}

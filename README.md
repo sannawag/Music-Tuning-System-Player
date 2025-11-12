@@ -2,6 +2,8 @@
 
 A standalone web application for creating chord sequences with pure Pythagorean tuning. Play chords in the browser and export them as MIDI files for use in DAWs and synthesizers.
 
+Available at https://music-tuning-system-player.vercel.app/
+
 ## Features
 
 - **Pure Pythagorean Tuning**: Uses authentic 3:2 fifth ratios for mathematically pure intervals
